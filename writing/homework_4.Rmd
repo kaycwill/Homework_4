@@ -1,0 +1,15 @@
+---
+title: "homework_4"
+author: "Kayla Williams"
+date: "October 24, 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+list.files()
+```
