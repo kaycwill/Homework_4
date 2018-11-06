@@ -14,7 +14,6 @@ library(readr)
 library(dplyr)
 library(tidyr)
 library(stringr)
-
 library(ggplot2)
 ```
 
@@ -40,16 +39,21 @@ head(homicides)
 Create a dataframe called unsolved with one row per city that gives the total number of homicides for the city and the number of unsolved homicides (those for which the disposition is “Closed without arrest” or “Open/No arrest”).
 
 ```{r unsolved_df}
-unsolved <- 
-  
-  homicides %>% filter(str_detect(disposition, c("Closed without arrest|Open/No arrest")))
+unsolved <- homicides %>%  group_by(city_name) %>% 
+  summarise(total_homicides = sum(!is.na(total_homicides)),
+            unsolved_homicides = sum((unsolved_homicides == "TRUE")))
+
 ```
 
 
 For the city of Baltimore, MD, use the prop.test function to estimate the proportion of homicides that are unsolved, as well as the 95% confidence interval for this proportion. Print the output of the prop.test directly in your RMarkdown, and then save the output of prop.test as an R object and apply the tidy function from the broom package to this object and pull the estimated proportion and confidence intervals from the resulting tidy dataframe.
 
-```{r}
+```{r prop_test}
+homicide_prop <- unsolved %>% 
+  filter(city_name == "Baltimore, MD")
 
+baltimore_homicides <- prop.test(x = homicide_prop$unsolved_homicides, 
+          n = homicide_prop$total_homicides)
 ```
 
 
@@ -62,4 +66,8 @@ Now use what you learned from running prop.test for one city to run prop.test fo
 
 Create the plot shown below. Hint: Check out the geom_errorbarh geom with the height = 0 option to get the horizontal lines for the confidence intervals.
 All of the code for this should be in an RMarkdown document. Render this to a pdf and then push to your GitHub repository. Go on GitHub and make sure that everything made in online.
+
+```{r}
+
+```
 
