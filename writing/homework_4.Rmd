@@ -87,10 +87,12 @@ prop_df <- full_join(unsolved2, all_homicides2)
 
 ```{r prop_graph}
 prop_df %>% 
-  mutate(city_name = fct_reorder(city_name, estimate)) %>% 
-  ggplot(aes(x = city_name)) + 
-  geom_errorbar(aes(ymin = (estimate - conf.low), 
-                    ymax = (estimate + conf.high)), width = 0) + 
+  mutate(city_name = fct_reorder(city_name, estimate)) %>%
+  filter(city_name != "Tulsa, AL") %>% 
+  ggplot(aes(x = city_name, y = estimate)) + 
+  geom_point(color = "white") +
+  geom_errorbar(aes(ymin = conf.low, 
+                    ymax = conf.high), width = 0, color = "white", alpha = 0.5) + 
   coord_flip() + 
   ggtitle("Unsolved homicides by city", "Bars show 95% confidence interval") +
   labs(x = "", y = "Percents of homicides that are unsolved") + 
