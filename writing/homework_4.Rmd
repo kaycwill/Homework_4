@@ -9,7 +9,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
 ```
 
 ```{r load_libraries, echo = FALSE}
@@ -17,6 +17,9 @@ library(readr)
 library(dplyr)
 library(tidyr)
 library(stringr)
+library(stats)
+library(scales)
+library(forcats)
 library(broom)
 library(purrr)
 library(ggplot2)
@@ -24,7 +27,7 @@ library(ggplot2)
 
 Read in the data as an R object named homicides.
 ```{r read_data}
-homicides <- read.csv("data/homicide-data.csv")
+homicides <- read.csv("C:/Users/Kayla/Desktop/r_course_2018/Homework_4/data/homicide-data.csv")
 
 head(homicides)
 ```
@@ -43,6 +46,12 @@ head(homicides)
 Create a dataframe called unsolved with one row per city that gives the total number of homicides for the city and the number of unsolved homicides (those for which the disposition is “Closed without arrest” or “Open/No arrest”).
 
 ```{r unsolved_df}
+homicides <- homicides %>% 
+  select(city_name, disposition) %>% 
+  mutate(unsolved_homicides = str_detect(disposition, 
+                                          c("Closed without arrest|Open/No arrest"))) %>%
+  rename(total_homicides = disposition)
+
 unsolved <- homicides %>%  group_by(city_name) %>% 
   summarise(total_homicides = sum(!is.na(homicides$total_homicides)),
             unsolved_homicides = sum((homicides$unsolved_homicides == "TRUE")))
@@ -70,7 +79,7 @@ all_homicides <- map2(unsolved$unsolved_homicides, unsolved$total_homicides, .f 
 
 all_homicides2 <- map_df(all_homicides, tidy)  
   
-unnest(all_homicides, .drop = TRUE)
+unnest(all_homicides2, .drop = TRUE)
 ```
 
 
@@ -85,19 +94,19 @@ prop_df <- full_join(unsolved2, all_homicides2)
 ```
 
 
-```{r prop_graph}
+```{r prop_graph, fig.height = 10}
 prop_df %>% 
   mutate(city_name = fct_reorder(city_name, estimate)) %>%
   filter(city_name != "Tulsa, AL") %>% 
   ggplot(aes(x = city_name, y = estimate)) + 
   geom_point(color = "white") +
   geom_errorbar(aes(ymin = conf.low, 
-                    ymax = conf.high), width = 0, color = "white", alpha = 0.5) + 
+                    ymax = conf.high), width = 0, 
+                color = "white", alpha = 0.5) + 
   coord_flip() + 
   ggtitle("Unsolved homicides by city", "Bars show 95% confidence interval") +
   labs(x = "", y = "Percents of homicides that are unsolved") + 
   scale_y_continuous(labels = percent) + 
   theme_dark()
-
 ```
 
