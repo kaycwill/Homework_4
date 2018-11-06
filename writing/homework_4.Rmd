@@ -77,7 +77,25 @@ unnest(all_homicides, .drop = TRUE)
 Create the plot shown below. Hint: Check out the geom_errorbarh geom with the height = 0 option to get the horizontal lines for the confidence intervals.
 All of the code for this should be in an RMarkdown document. Render this to a pdf and then push to your GitHub repository. Go on GitHub and make sure that everything made in online.
 
-```{r}
+```{r join_datasets, echo = FALSE}
+unsolved2 <- unsolved %>% 
+  mutate(estimate = unsolved_homicides/total_homicides)
+
+prop_df <- full_join(unsolved2, all_homicides2)
+```
+
+
+```{r prop_graph}
+prop_df %>% 
+  mutate(city_name = fct_reorder(city_name, estimate)) %>% 
+  ggplot(aes(x = city_name)) + 
+  geom_errorbar(aes(ymin = (estimate - conf.low), 
+                    ymax = (estimate + conf.high)), width = 0) + 
+  coord_flip() + 
+  ggtitle("Unsolved homicides by city", "Bars show 95% confidence interval") +
+  labs(x = "", y = "Percents of homicides that are unsolved") + 
+  scale_y_continuous(labels = percent) + 
+  theme_dark()
 
 ```
 
