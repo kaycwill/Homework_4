@@ -75,7 +75,7 @@ unnest(all_homicides, .drop = TRUE)
 
 
 Create the plot shown below. Hint: Check out the geom_errorbarh geom with the height = 0 option to get the horizontal lines for the confidence intervals.
-All of the code for this should be in an RMarkdown document. Render this to a pdf and then push to your GitHub repository. Go on GitHub and make sure that everything made in online.
+All of the code for this should be in an RMarkdown document. Render this to a pdf and then push to your GitHub repository. Go on GitHub and make sure that everything made it online.
 
 ```{r join_datasets, echo = FALSE}
 unsolved2 <- unsolved %>% 
