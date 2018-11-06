@@ -2,7 +2,10 @@
 title: "homework_4"
 author: "Kayla Williams"
 date: "October 24, 2018"
-output: pdf_document
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -14,12 +17,13 @@ library(readr)
 library(dplyr)
 library(tidyr)
 library(stringr)
+library(broom)
+library(purrr)
 library(ggplot2)
 ```
 
 Read in the data as an R object named homicides.
 ```{r read_data}
-setwd("C:/Users/Kayla/Desktop/r_course_2018/Homework_4")
 homicides <- read.csv("data/homicide-data.csv")
 
 head(homicides)
@@ -40,8 +44,8 @@ Create a dataframe called unsolved with one row per city that gives the total nu
 
 ```{r unsolved_df}
 unsolved <- homicides %>%  group_by(city_name) %>% 
-  summarise(total_homicides = sum(!is.na(total_homicides)),
-            unsolved_homicides = sum((unsolved_homicides == "TRUE")))
+  summarise(total_homicides = sum(!is.na(homicides$total_homicides)),
+            unsolved_homicides = sum((homicides$unsolved_homicides == "TRUE")))
 
 ```
 
@@ -54,13 +58,19 @@ homicide_prop <- unsolved %>%
 
 baltimore_homicides <- prop.test(x = homicide_prop$unsolved_homicides, 
           n = homicide_prop$total_homicides)
+
+tidy(baltimore_homicides)
 ```
 
 
-Now use what you learned from running prop.test for one city to run prop.test for all the cities. Your goal is to create the figure shown below, where the points show the estimated proportions of unsolved homicides in each city and the horizontal lines show the estimated 95% confidence intervals. Do this all within a “tidy” pipeline, starting from the unsolved dataframe that you created for step 3. Use map2 from purrr to apply prop.test within each city and then map from purrr to apply tidy to this output. Use the unnest function from the tidyr package on the resulting list-column (from mapping tidy to the prop.test output list-column), with the option .drop = TRUE, to get your estimates back into a regular tidy data frame before plotting.
+Now use what you learned from running prop.test for one city to run prop.test for all the cities. Your goal is to create the figure shown in homework directions, where the points show the estimated proportions of unsolved homicides in each city and the horizontal lines show the estimated 95% confidence intervals. Do this all within a “tidy” pipeline, starting from the unsolved dataframe that you created for step 3. Use map2 from purrr to apply prop.test within each city and then map from purrr to apply tidy to this output. Use the unnest function from the tidyr package on the resulting list-column (from mapping tidy to the prop.test output list-column), with the option .drop = TRUE, to get your estimates back into a regular tidy data frame before plotting.
 
-```{r}
+```{r all_city_prop}
+all_homicides <- map2(unsolved$unsolved_homicides, unsolved$total_homicides, .f = prop.test)
 
+all_homicides2 <- map_df(all_homicides, tidy)  
+  
+unnest(all_homicides, .drop = TRUE)
 ```
 
 
