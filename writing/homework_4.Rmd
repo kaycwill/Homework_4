@@ -1,7 +1,7 @@
 ---
 title: "homework_4"
 author: "Kayla Williams"
-date: "October 24, 2018"
+date: "November 7, 2018"
 output:
   pdf_document: default
   html_document:
@@ -52,10 +52,12 @@ homicides <- homicides %>%
                                           c("Closed without arrest|Open/No arrest"))) %>%
   rename(total_homicides = disposition)
 
-unsolved <- homicides %>%  group_by(city_name) %>% 
-  summarise(total_homicides = sum(!is.na(homicides$total_homicides)),
-            unsolved_homicides = sum((homicides$unsolved_homicides == "TRUE")))
+unsolved <- homicides %>%  
+  group_by(city_name) %>% 
+  summarise(total_homicides = sum(!is.na(total_homicides)),
+            unsolved_homicides = sum((unsolved_homicides == "TRUE")))
 
+head(unsolved)
 ```
 
 
