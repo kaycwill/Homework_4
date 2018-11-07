@@ -1,4 +1,5 @@
-## Section 1 code (read in data)
+## Section 1 code (read in data) ###
+####################################
 
 library(readr)
 library(dplyr)
@@ -15,14 +16,16 @@ homicides <- read.csv("data/homicide-data.csv")
 
 head(homicides)
 
-## Section 2 code (create city_name)
+## Section 2 code (create city_name) ##
+#######################################
 
 homicides <- homicides %>%
   unite(city_name, city, state, sep = ", ", remove = FALSE)
 
 head(homicides)
 
-## Section 3 code (create dataframe)
+## Section 3 code (create dataframe) ##
+#######################################
 
 homicides <- homicides %>% 
   select(city_name, disposition) %>% 
@@ -36,7 +39,8 @@ unsolved <- homicides %>%
   summarise(total_homicides = sum(!is.na(total_homicides)),
             unsolved_homicides = sum((unsolved_homicides == "TRUE")))
 
-## Section 4 code (prop.test for Baltimore)
+## Section 4 code (prop.test for Baltimore) ##
+##############################################
 
 homicide_prop <- unsolved %>% 
   filter(city_name == "Baltimore, MD")
@@ -46,7 +50,8 @@ baltimore_homicides <- prop.test(x = homicide_prop$unsolved_homicides,
 
 tidy(baltimore_homicides)
 
-## Section 5 code (prop.test for all cities)
+## Section 5 code (prop.test for all cities) ##
+###############################################
 
 all_homicides <- map2(unsolved$unsolved_homicides, unsolved$total_homicides, .f = prop.test)
 
@@ -54,7 +59,8 @@ all_homicides2 <- map_df(all_homicides, tidy)
 
 unnest(all_homicides2, .drop = TRUE)
 
-## Section 6 code (creating a graph)
+## Section 6 code (creating a graph) ##
+#######################################
 
 unsolved2 <- unsolved %>% 
   mutate(estimate = unsolved_homicides/total_homicides)
